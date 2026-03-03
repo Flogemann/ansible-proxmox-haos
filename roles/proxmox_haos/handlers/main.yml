@@ -1,12 +1,4 @@
 ---
-- name: Configure Boot Order
-  ansible.builtin.command: >
-    qm set {{ haos_vmid }}
-    --ide2 {{ haos_storage }}:vm-{{ haos_vmid }}-disk-0
-    --boot order=ide2
-    --onboot 1
-  changed_when: true
-
 - name: Start VM
   ansible.builtin.command: "qm start {{ haos_vmid }}"
   changed_when: true

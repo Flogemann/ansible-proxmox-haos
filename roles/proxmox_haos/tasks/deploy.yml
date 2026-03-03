@@ -14,6 +14,12 @@
     --net0 virtio,bridge={{ haos_bridge }}
     --machine q35
     --bios ovmf
+    --ostype l26
+  when: proxmox_haos_vm_status.rc != 0
+  changed_when: true
+
+- name: Add EFI Disk for UEFI storage
+  ansible.builtin.command: "qm set {{ haos_vmid }} --efidisk0 {{ haos_storage }}:0"
   when: proxmox_haos_vm_status.rc != 0
   changed_when: true
 
@@ -22,12 +28,26 @@
     qm importdisk {{ haos_vmid }}
     /var/lib/vz/template/cache/haos_ova-{{ haos_version }}.qcow2
     {{ haos_storage }}
-    --format qcow2
   when: proxmox_haos_vm_status.rc != 0
   changed_when: true
-  notify:
-    - Configure Boot Order
-    - Start VM
 
-- name: Flush handlers to ensure VM is ready for summary
+- name: Attach imported disk to IDE2 slot
+  ansible.builtin.command: >
+    qm set {{ haos_vmid }} --ide2 {{ haos_storage }}:vm-{{ haos_vmid }}-disk-1
+  when: proxmox_haos_vm_status.rc != 0
+  register: proxmox_haos_attach_disk_result
+  failed_when: false
+  changed_when: proxmox_haos_attach_disk_result.rc == 0
+
+- name: Finalize VM Configuration and Boot Order
+  ansible.builtin.command: >
+    qm set {{ haos_vmid }}
+    --boot order=ide2
+    --onboot 1
+    --ostype l26
+  when: proxmox_haos_vm_status.rc != 0
+  changed_when: true
+  notify: Start VM
+
+- name: Flush handlers
   ansible.builtin.meta: flush_handlers
