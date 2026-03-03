@@ -1,0 +1,21 @@
+---
+# API connection
+proxmox_api_url: "https://192.168.0.20:8006"
+proxmox_node: "pve01"
+proxmox_api_user: "ansible@pve!ha-token"
+proxmox_api_token_id: "ansible@pve!ha-token"
+proxmox_api_token_secret: "{{ vault_proxmox_api_token_secret }}"
+
+# HAOS VM settings
+haos_vmid: 110
+haos_vm_name: "home-assistant"
+haos_memory: 4096
+haos_cores: 4
+haos_bridge: "vmbr0"
+haos_storage: "local-lvm"
+haos_image_source: "/var/lib/vz/import/haos_ova-16.3.qcow2"
+
+# HAOS image details
+haos_version: "12.1"
+haos_image_url: "https://github.com/home-assistant/operating-system/releases/download/{{ haos_version }}/haos_ova-{{ haos_version }}.qcow2.xz"
+haos_tmp_dir: "/var/lib/vz/template/cache"

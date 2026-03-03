@@ -1,0 +1,17 @@
+---
+- name: Display Deployment Summary
+  ansible.builtin.debug:
+    msg:
+      - "------------------------------------------------------"
+      - "        HOME ASSISTANT OS DEPLOYMENT COMPLETE         "
+      - "------------------------------------------------------"
+      - " VM Name     : {{ haos_vm_name }}"
+      - " VM ID       : {{ haos_vmid }}"
+      - " HAOS Version: {{ haos_version }}"
+      - "------------------------------------------------------"
+      - " NEXT STEPS:"
+      - " 1. The VM is starting up. Wait about 1-2 minutes."
+      - " 2. Access the UI: http://{{ haos_vm_name }}.local:8123"
+      - " 3. If the link above fails, find the IP in your router"
+      - "    or Proxmox console and use http://<IP>:8123"
+      - "------------------------------------------------------"

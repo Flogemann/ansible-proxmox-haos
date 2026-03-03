@@ -1,0 +1,33 @@
+---
+# 1. Environment & Dependency Check
+- name: Ensure xz-utils is installed on Proxmox
+  ansible.builtin.package:
+    name: xz-utils
+    state: present
+
+# 2. Image Management
+- name: Check if HAOS image already exists
+  ansible.builtin.stat:
+    path: "/var/lib/vz/template/cache/haos_ova-{{ haos_version }}.qcow2"
+  register: proxmox_haos_image_stat
+
+- name: Handle HAOS image download and extraction
+  when: not proxmox_haos_image_stat.stat.exists
+  block:
+    - name: Download HAOS xz archive
+      ansible.builtin.get_url:
+        url: "https://github.com/home-assistant/operating-system/releases/download/{{ haos_version }}/haos_ova-{{ haos_version }}.qcow2.xz"
+        dest: "/var/lib/vz/template/cache/haos_ova-{{ haos_version }}.qcow2.xz"
+        mode: '0644'
+
+    - name: Unpack HAOS image
+      ansible.builtin.command:
+        cmd: "unxz /var/lib/vz/template/cache/haos_ova-{{ haos_version }}.qcow2.xz"
+      changed_when: true
+
+# 3. Execution Logic
+- name: Execute VM deployment tasks
+  ansible.builtin.include_tasks: deploy.yml
+
+- name: Show final summary and connection info
+  ansible.builtin.include_tasks: summary.yml

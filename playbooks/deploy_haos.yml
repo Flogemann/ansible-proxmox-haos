@@ -1,0 +1,7 @@
+---
+- name: Deploy Home Assistant OS
+  hosts: proxmox_servers
+  gather_facts: false
+
+  roles:
+    - proxmox_haos
